@@ -1,7 +1,5 @@
 -- ============================================================
--- APEX UI - Librería de interfaz para Roblox
--- Creador: AlexOfficial
--- Licencia: MIT
+-- APEX UI - Librería corregida
 -- ============================================================
 
 local ApexUI = {}
@@ -9,12 +7,8 @@ ApexUI.__index = ApexUI
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 
--- ============================================================
--- TEMAS
--- ============================================================
 local Themes = {
     SpeedHub = {
         Background = Color3.fromRGB(12, 12, 16),
@@ -36,26 +30,6 @@ local Themes = {
         ToggleOff = Color3.fromRGB(70, 70, 80),
         Transparency = 0.15
     },
-    Dark = {
-        Background = Color3.fromRGB(15, 15, 18),
-        Header = Color3.fromRGB(22, 22, 28),
-        Accent = Color3.fromRGB(120, 80, 220),
-        Text = Color3.fromRGB(240, 240, 245),
-        SubText = Color3.fromRGB(150, 150, 160),
-        Element = Color3.fromRGB(30, 30, 38),
-        ToggleOff = Color3.fromRGB(55, 55, 65),
-        Transparency = 0.2
-    },
-    Light = {
-        Background = Color3.fromRGB(240, 240, 245),
-        Header = Color3.fromRGB(225, 225, 235),
-        Accent = Color3.fromRGB(100, 60, 200),
-        Text = Color3.fromRGB(30, 30, 40),
-        SubText = Color3.fromRGB(90, 90, 100),
-        Element = Color3.fromRGB(215, 215, 225),
-        ToggleOff = Color3.fromRGB(180, 180, 190),
-        Transparency = 0.1
-    },
     Amethyst = {
         Background = Color3.fromRGB(25, 18, 38),
         Header = Color3.fromRGB(35, 25, 50),
@@ -70,33 +44,25 @@ local Themes = {
 
 local CurrentTheme = Themes.SpeedHub
 
--- ============================================================
--- AUXILIARES
--- ============================================================
-local function Create(className, props)
-    local inst = Instance.new(className)
-    for k, v in pairs(props or {}) do
-        inst[k] = v
-    end
-    return inst
+local function Create(class, props)
+    local i = Instance.new(class)
+    for k, v in pairs(props or {}) do i[k] = v end
+    return i
 end
 
-local function Tween(obj, time, props, style, direction)
-    local info = TweenInfo.new(
+local function Tween(obj, time, props, style, dir)
+    local t = TweenService:Create(obj, TweenInfo.new(
         time or 0.2,
         style or Enum.EasingStyle.Quad,
-        direction or Enum.EasingDirection.Out
-    )
-    local tween = TweenService:Create(obj, info, props)
-    tween:Play()
-    return tween
+        dir or Enum.EasingDirection.Out
+    ), props)
+    t:Play()
+    return t
 end
 
 local function MakeDraggable(frame, dragArea)
     dragArea = dragArea or frame
-    local dragging = false
-    local dragStart, startPos
-
+    local dragging, dragStart, startPos
     dragArea.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
@@ -105,22 +71,17 @@ local function MakeDraggable(frame, dragArea)
             startPos = frame.Position
         end
     end)
-
     dragArea.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
-
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
         or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            frame.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
 end
@@ -141,7 +102,6 @@ function ApexUI:CreateWindow(title)
     })
 
     self.Main = Create("Frame", {
-        Name = "Main",
         Size = UDim2.new(0, 420, 0, 320),
         Position = UDim2.new(0.5, -210, 0.5, -160),
         BackgroundColor3 = CurrentTheme.Background,
@@ -151,24 +111,11 @@ function ApexUI:CreateWindow(title)
         ClipsDescendants = true,
         Parent = self.ScreenGui
     })
-
     Create("UICorner", { CornerRadius = UDim.new(0, 14), Parent = self.Main })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1.5,
-        Transparency = 0.35,
-        Parent = self.Main
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1.5, Transparency = 0.35, Parent = self.Main })
 
-    self.Main.Size = UDim2.new(0, 0, 0, 0)
-    self.Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Tween(self.Main, 0.35, {
-        Size = UDim2.new(0, 420, 0, 320),
-        Position = UDim2.new(0.5, -210, 0.5, -160)
-    }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-
+    -- Barra de título
     local titleBar = Create("Frame", {
-        Name = "TitleBar",
         Size = UDim2.new(1, 0, 0, 34),
         BackgroundColor3 = CurrentTheme.Header,
         BackgroundTransparency = CurrentTheme.Transparency,
@@ -184,7 +131,6 @@ function ApexUI:CreateWindow(title)
         BorderSizePixel = 0,
         Parent = titleBar
     })
-
     Create("Frame", {
         Size = UDim2.new(0, 3, 0, 20),
         Position = UDim2.new(0, 12, 0.5, -10),
@@ -192,7 +138,6 @@ function ApexUI:CreateWindow(title)
         BorderSizePixel = 0,
         Parent = titleBar
     })
-
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
         Position = UDim2.new(0, 22, 0, 0),
@@ -210,12 +155,9 @@ function ApexUI:CreateWindow(title)
         Position = UDim2.new(1, -52, 0, 6),
         BackgroundColor3 = Color3.fromRGB(240, 180, 60),
         BackgroundTransparency = 0.1,
-        Text = "—",
-        TextColor3 = Color3.new(1, 1, 1),
-        Font = Enum.Font.GothamBold,
-        TextSize = 11,
-        AutoButtonColor = false,
-        Parent = titleBar
+        Text = "—", TextColor3 = Color3.new(1,1,1),
+        Font = Enum.Font.GothamBold, TextSize = 11,
+        AutoButtonColor = false, Parent = titleBar
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = minBtn })
 
@@ -224,31 +166,24 @@ function ApexUI:CreateWindow(title)
         Position = UDim2.new(1, -26, 0, 6),
         BackgroundColor3 = Color3.fromRGB(220, 60, 60),
         BackgroundTransparency = 0.1,
-        Text = "X",
-        TextColor3 = Color3.new(1, 1, 1),
-        Font = Enum.Font.GothamBold,
-        TextSize = 11,
-        AutoButtonColor = false,
-        Parent = titleBar
+        Text = "X", TextColor3 = Color3.new(1,1,1),
+        Font = Enum.Font.GothamBold, TextSize = 11,
+        AutoButtonColor = false, Parent = titleBar
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = closeBtn })
 
-    closeBtn.MouseButton1Click:Connect(function()
-        self.ScreenGui:Destroy()
-    end)
-
+    closeBtn.MouseButton1Click:Connect(function() self.ScreenGui:Destroy() end)
     minBtn.MouseButton1Click:Connect(function()
         local isMin = self.Main.Size.Y.Offset < 100
         Tween(self.Main, 0.25, {
             Size = isMin and UDim2.new(0, 420, 0, 320) or UDim2.new(0, 420, 0, 34)
-        }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        })
     end)
 
     MakeDraggable(self.Main, titleBar)
 
     -- Sidebar
     self.Sidebar = Create("ScrollingFrame", {
-        Name = "Sidebar",
         Size = UDim2.new(0, 115, 1, -46),
         Position = UDim2.new(0, 10, 0, 42),
         BackgroundColor3 = CurrentTheme.Header,
@@ -256,27 +191,15 @@ function ApexUI:CreateWindow(title)
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = CurrentTheme.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 2000),
         Parent = self.Main
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = self.Sidebar })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 4),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = self.Sidebar
-    })
-    Create("UIPadding", {
-        PaddingTop = UDim.new(0, 6),
-        PaddingLeft = UDim.new(0, 6),
-        PaddingRight = UDim.new(0, 6),
-        PaddingBottom = UDim.new(0, 6),
-        Parent = self.Sidebar
-    })
+    Create("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar })
+    Create("UIPadding", { PaddingTop = UDim.new(0,6), PaddingLeft = UDim.new(0,6), PaddingRight = UDim.new(0,6), PaddingBottom = UDim.new(0,6), Parent = self.Sidebar })
 
     -- Content
     self.Content = Create("Frame", {
-        Name = "Content",
         Size = UDim2.new(1, -135, 1, -46),
         Position = UDim2.new(0, 125, 0, 42),
         BackgroundColor3 = CurrentTheme.Header,
@@ -291,7 +214,7 @@ function ApexUI:CreateWindow(title)
 end
 
 -- ============================================================
--- PESTAÑAS
+-- TAB
 -- ============================================================
 function ApexUI:CreateTab(name)
     local tab = { Name = name }
@@ -309,10 +232,9 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
-    -- ScrollingFrame con tamaño de Canvas fijo grande (SOLUCIÓN AL PROBLEMA)
+    -- ScrollingFrame con CanvasSize GRANDE
     local frame = Create("ScrollingFrame", {
-        Size = UDim2.new(1, -10, 1, -10),
-        Position = UDim2.new(0, 5, 0, 5),
+        Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -321,18 +243,8 @@ function ApexUI:CreateTab(name)
         Visible = false,
         Parent = self.Content
     })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 6),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = frame
-    })
-    Create("UIPadding", {
-        PaddingTop = UDim.new(0, 5),
-        PaddingLeft = UDim.new(0, 5),
-        PaddingRight = UDim.new(0, 5),
-        PaddingBottom = UDim.new(0, 5),
-        Parent = frame
-    })
+    Create("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder, Parent = frame })
+    Create("UIPadding", { PaddingTop = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), PaddingBottom = UDim.new(0,8), Parent = frame })
 
     tab.Button = btn
     tab.Frame = frame
@@ -359,7 +271,6 @@ function ApexUI:CreateTab(name)
     end)
 
     table.insert(self.Tabs, tab)
-
     if #self.Tabs == 1 then
         frame.Visible = true
         btn.BackgroundColor3 = CurrentTheme.Accent
@@ -370,25 +281,10 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- SECCIONES
+-- SECTION - Ahora los elementos van DIRECTO al tab.Frame
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
-    local section = { Name = name }
-
-    -- Frame contenedor de la sección
-    local sectionFrame = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        BackgroundTransparency = 1,
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Parent = tab.Frame
-    })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = sectionFrame
-    })
-
-    -- Label de la sección
+    -- Label directamente en el tab
     local label = Create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 22),
         BackgroundTransparency = 1,
@@ -397,29 +293,15 @@ function ApexUI:CreateSection(tab, name)
         Font = Enum.Font.GothamBold,
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
-        LayoutOrder = 0,
-        Parent = sectionFrame
+        Parent = tab.Frame
     })
 
-    -- Container de los elementos
-    local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        BackgroundTransparency = 1,
-        AutomaticSize = Enum.AutomaticSize.Y,
-        LayoutOrder = 1,
-        Parent = sectionFrame
-    })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = container
-    })
-
-    section.Label = label
-    section.Container = sectionFrame
-    section.Frame = container
-
-    return section
+    -- Los elementos se añaden DIRECTAMENTE al tab.Frame (no hay container)
+    return {
+        Name = name,
+        Label = label,
+        Frame = tab.Frame  -- ← CLAVE: apunta al tab.Frame, no a un sub-frame
+    }
 end
 
 -- ============================================================
@@ -438,12 +320,7 @@ function ApexUI:CreateButton(section, name, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = btn
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = btn })
 
     btn.MouseEnter:Connect(function()
         Tween(btn, 0.15, { BackgroundColor3 = CurrentTheme.Accent, BackgroundTransparency = 0 })
@@ -451,7 +328,6 @@ function ApexUI:CreateButton(section, name, callback)
     btn.MouseLeave:Connect(function()
         Tween(btn, 0.15, { BackgroundColor3 = CurrentTheme.Element, BackgroundTransparency = 0.2 })
     end)
-
     btn.MouseButton1Click:Connect(function()
         if callback then callback() end
     end)
@@ -472,12 +348,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -60, 1, 0),
@@ -512,9 +383,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
     toggleBtn.MouseButton1Click:Connect(function()
         state = not state
         Tween(toggleBtn, 0.2, { BackgroundColor3 = state and CurrentTheme.Accent or CurrentTheme.ToggleOff })
-        Tween(circle, 0.2, {
-            Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
-        })
+        Tween(circle, 0.2, { Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7) })
         if callback then callback(state) end
     end)
 
@@ -536,12 +405,7 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     local label = Create("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
@@ -573,8 +437,7 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = fill })
 
     local dragging = false
-
-    local function updateFromInput(input)
+    local function update(input)
         local relX = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
         value = math.floor(min + (max - min) * relX)
         fill.Size = UDim2.new(relX, 0, 1, 0)
@@ -586,21 +449,19 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
         if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
-            updateFromInput(input)
+            update(input)
         end
     end)
-
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
-
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
         or input.UserInputType == Enum.UserInputType.Touch) then
-            updateFromInput(input)
+            update(input)
         end
     end)
 
@@ -619,15 +480,9 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     local selected = default or (options and options[1]) or "Ninguno"
-
     local header = Create("TextButton", {
         Size = UDim2.new(1, 0, 0, 28),
         BackgroundTransparency = 1,
@@ -649,54 +504,38 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         Parent = container
     })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 2),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = listFrame
-    })
+    Create("UIListLayout", { Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder, Parent = listFrame })
 
     local open = false
-
-    local function refreshList()
-        for _, child in pairs(listFrame:GetChildren()) do
-            if child:IsA("TextButton") then child:Destroy() end
-        end
-        for _, opt in pairs(options) do
-            local optBtn = Create("TextButton", {
-                Size = UDim2.new(1, 0, 0, 22),
-                BackgroundColor3 = CurrentTheme.Background,
-                BackgroundTransparency = 0.2,
-                Text = tostring(opt),
-                TextColor3 = CurrentTheme.Text,
-                Font = Enum.Font.Gotham,
-                TextSize = 10,
-                AutoButtonColor = false,
-                Parent = listFrame
-            })
-            Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = optBtn })
-
-            optBtn.MouseEnter:Connect(function()
-                Tween(optBtn, 0.1, { BackgroundColor3 = CurrentTheme.Accent, BackgroundTransparency = 0 })
-            end)
-            optBtn.MouseLeave:Connect(function()
-                Tween(optBtn, 0.1, { BackgroundColor3 = CurrentTheme.Background, BackgroundTransparency = 0.2 })
-            end)
-
-            optBtn.MouseButton1Click:Connect(function()
-                selected = opt
-                header.Text = name .. ": " .. tostring(opt) .. "  ▼"
-                open = false
-                Tween(container, 0.2, { Size = UDim2.new(1, 0, 0, 28) })
-                listFrame.Size = UDim2.new(1, -8, 0, 0)
-                if callback then callback(opt) end
-            end)
-        end
-    end
 
     header.MouseButton1Click:Connect(function()
         open = not open
         if open then
-            refreshList()
+            for _, child in pairs(listFrame:GetChildren()) do
+                if child:IsA("TextButton") then child:Destroy() end
+            end
+            for _, opt in pairs(options) do
+                local optBtn = Create("TextButton", {
+                    Size = UDim2.new(1, 0, 0, 22),
+                    BackgroundColor3 = CurrentTheme.Background,
+                    BackgroundTransparency = 0.2,
+                    Text = tostring(opt),
+                    TextColor3 = CurrentTheme.Text,
+                    Font = Enum.Font.Gotham,
+                    TextSize = 10,
+                    AutoButtonColor = false,
+                    Parent = listFrame
+                })
+                Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = optBtn })
+                optBtn.MouseButton1Click:Connect(function()
+                    selected = opt
+                    header.Text = name .. ": " .. tostring(opt) .. "  ▼"
+                    open = false
+                    Tween(container, 0.2, { Size = UDim2.new(1, 0, 0, 28) })
+                    listFrame.Size = UDim2.new(1, -8, 0, 0)
+                    if callback then callback(opt) end
+                end)
+            end
             local height = math.min(#options * 24, 110)
             Tween(container, 0.2, { Size = UDim2.new(1, 0, 0, 28 + height + 4) })
             listFrame.Size = UDim2.new(1, -8, 0, height)
@@ -720,12 +559,7 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     local box = Create("TextBox", {
         Size = UDim2.new(1, -20, 1, -8),
@@ -742,11 +576,7 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
         Parent = container
     })
 
-    box.Focused:Connect(function()
-        Tween(container, 0.15, { BackgroundColor3 = CurrentTheme.Accent })
-    end)
     box.FocusLost:Connect(function()
-        Tween(container, 0.15, { BackgroundColor3 = CurrentTheme.Element })
         if callback then callback(box.Text) end
     end)
 
@@ -764,12 +594,7 @@ function ApexUI:CreateColorpicker(section, name, default, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -60, 1, 0),
@@ -794,23 +619,17 @@ function ApexUI:CreateColorpicker(section, name, default, callback)
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = colorBtn })
 
     local palette = {
-        Color3.fromRGB(255, 0, 0),
-        Color3.fromRGB(0, 255, 0),
-        Color3.fromRGB(0, 0, 255),
-        Color3.fromRGB(255, 255, 0),
-        Color3.fromRGB(255, 0, 255),
-        Color3.fromRGB(0, 255, 255),
-        Color3.fromRGB(255, 255, 255),
-        Color3.fromRGB(0, 0, 0)
+        Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255),
+        Color3.fromRGB(255, 255, 0), Color3.fromRGB(255, 0, 255), Color3.fromRGB(0, 255, 255),
+        Color3.fromRGB(255, 255, 255), Color3.fromRGB(0, 0, 0)
     }
     local index = 1
 
     colorBtn.MouseButton1Click:Connect(function()
         index = index + 1
         if index > #palette then index = 1 end
-        local col = palette[index]
-        Tween(colorBtn, 0.2, { BackgroundColor3 = col })
-        if callback then callback(col) end
+        Tween(colorBtn, 0.2, { BackgroundColor3 = palette[index] })
+        if callback then callback(palette[index]) end
     end)
 
     return colorBtn
@@ -827,12 +646,7 @@ function ApexUI:CreateKeybind(section, name, defaultKey, callback)
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1,
-        Transparency = 0.6,
-        Parent = container
-    })
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
@@ -861,27 +675,19 @@ function ApexUI:CreateKeybind(section, name, defaultKey, callback)
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = keyBtn })
 
     local listening = false
-
     keyBtn.MouseButton1Click:Connect(function()
         listening = true
         keyBtn.Text = "..."
-        Tween(keyBtn, 0.15, { BackgroundColor3 = CurrentTheme.Accent })
     end)
 
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if listening then
-            if input.UserInputType == Enum.UserInputType.Keyboard then
-                keyBtn.Text = input.KeyCode.Name
-                listening = false
-                Tween(keyBtn, 0.15, { BackgroundColor3 = CurrentTheme.Background })
-                if callback then callback(input.KeyCode) end
-            end
-        else
-            if input.UserInputType == Enum.UserInputType.Keyboard
-            and input.KeyCode.Name == keyBtn.Text then
-                if callback then callback(input.KeyCode) end
-            end
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if listening and input.UserInputType == Enum.UserInputType.Keyboard then
+            keyBtn.Text = input.KeyCode.Name
+            listening = false
+            if callback then callback(input.KeyCode) end
+        elseif input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode.Name == keyBtn.Text then
+            if callback then callback(input.KeyCode) end
         end
     end)
 
@@ -892,7 +698,7 @@ end
 -- LABEL
 -- ============================================================
 function ApexUI:CreateLabel(section, text)
-    local label = Create("TextLabel", {
+    return Create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
         Text = text,
@@ -902,76 +708,41 @@ function ApexUI:CreateLabel(section, text)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = section.Frame
     })
-    return label
 end
 
 -- ============================================================
 -- NOTIFICACIÓN
 -- ============================================================
 local notifCount = 0
-
 function ApexUI:Notify(title, text, duration)
     duration = duration or 3
     notifCount = notifCount + 1
-    local myIndex = notifCount
-
     local notif = Create("Frame", {
         Size = UDim2.new(0, 250, 0, 56),
-        Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66),
+        Position = UDim2.new(1, 260, 0, 20 + (notifCount - 1) * 66),
         BackgroundColor3 = CurrentTheme.Header,
         BackgroundTransparency = CurrentTheme.Transparency,
         BorderSizePixel = 0,
         Parent = self.ScreenGui
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = notif })
-    Create("UIStroke", {
-        Color = Color3.fromRGB(255, 255, 255),
-        Thickness = 1.5,
-        Transparency = 0.3,
-        Parent = notif
-    })
-
-    Create("Frame", {
-        Size = UDim2.new(0, 3, 0, 30),
-        Position = UDim2.new(0, 8, 0.5, -15),
-        BackgroundColor3 = CurrentTheme.Accent,
-        BorderSizePixel = 0,
-        Parent = notif
-    })
-
+    Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1.5, Transparency = 0.3, Parent = notif })
+    Create("Frame", { Size = UDim2.new(0, 3, 0, 30), Position = UDim2.new(0, 8, 0.5, -15), BackgroundColor3 = CurrentTheme.Accent, BorderSizePixel = 0, Parent = notif })
     Create("TextLabel", {
-        Size = UDim2.new(1, -30, 0, 18),
-        Position = UDim2.new(0, 18, 0, 8),
-        BackgroundTransparency = 1,
-        Text = title,
-        TextColor3 = CurrentTheme.Accent,
-        Font = Enum.Font.GothamBold,
-        TextSize = 12,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = notif
+        Size = UDim2.new(1, -30, 0, 18), Position = UDim2.new(0, 18, 0, 8),
+        BackgroundTransparency = 1, Text = title, TextColor3 = CurrentTheme.Accent,
+        Font = Enum.Font.GothamBold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, Parent = notif
     })
-
     Create("TextLabel", {
-        Size = UDim2.new(1, -30, 0, 18),
-        Position = UDim2.new(0, 18, 0, 28),
-        BackgroundTransparency = 1,
-        Text = text,
-        TextColor3 = CurrentTheme.Text,
-        Font = Enum.Font.Gotham,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextWrapped = true,
-        Parent = notif
+        Size = UDim2.new(1, -30, 0, 18), Position = UDim2.new(0, 18, 0, 28),
+        BackgroundTransparency = 1, Text = text, TextColor3 = CurrentTheme.Text,
+        Font = Enum.Font.Gotham, TextSize = 10, TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true, Parent = notif
     })
 
-    Tween(notif, 0.3, {
-        Position = UDim2.new(1, -260, 0, 20 + (myIndex - 1) * 66)
-    }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-
+    Tween(notif, 0.3, { Position = UDim2.new(1, -260, 0, 20 + (notifCount - 1) * 66) }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     task.delay(duration, function()
-        Tween(notif, 0.25, {
-            Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66)
-        }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        Tween(notif, 0.25, { Position = UDim2.new(1, 260, 0, 20 + (notifCount - 1) * 66) })
         task.wait(0.26)
         notif:Destroy()
     end)
@@ -980,19 +751,14 @@ end
 -- ============================================================
 -- TEMAS
 -- ============================================================
-function ApexUI:SetTheme(themeName)
-    if Themes[themeName] then
-        CurrentTheme = Themes[themeName]
-        return true
-    end
+function ApexUI:SetTheme(name)
+    if Themes[name] then CurrentTheme = Themes[name]; return true end
     return false
 end
 
 function ApexUI:GetThemes()
     local list = {}
-    for k, _ in pairs(Themes) do
-        table.insert(list, k)
-    end
+    for k, _ in pairs(Themes) do table.insert(list, k) end
     return list
 end
 
@@ -1000,21 +766,8 @@ end
 -- CONFIGS
 -- ============================================================
 local Configs = {}
+function ApexUI:SaveConfig(name) Configs[name] = Configs[name] or {}; return true end
+function ApexUI:LoadConfig(name) return Configs[name] or {} end
+function ApexUI:DeleteConfig(name) Configs[name] = nil end
 
-function ApexUI:SaveConfig(name)
-    Configs[name] = Configs[name] or {}
-    return true
-end
-
-function ApexUI:LoadConfig(name)
-    return Configs[name] or {}
-end
-
-function ApexUI:DeleteConfig(name)
-    Configs[name] = nil
-end
-
--- ============================================================
--- RETORNAR
--- ============================================================
 return ApexUI
