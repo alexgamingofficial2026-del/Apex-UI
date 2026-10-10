@@ -246,7 +246,6 @@ function ApexUI:CreateWindow(title)
 
     MakeDraggable(self.Main, titleBar)
 
-    -- Sidebar
     self.Sidebar = Create("ScrollingFrame", {
         Name = "Sidebar",
         Size = UDim2.new(0, 115, 1, -46),
@@ -274,7 +273,6 @@ function ApexUI:CreateWindow(title)
         Parent = self.Sidebar
     })
 
-    -- Contenido
     self.Content = Create("Frame", {
         Name = "Content",
         Size = UDim2.new(1, -135, 1, -46),
@@ -309,7 +307,6 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
-    -- ScrollingFrame por pestaña
     local frame = Create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
@@ -371,12 +368,23 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- SECCIONES (SIN WRAPPER - DIRECTO AL TAB)
+-- SECCIONES (FIX: Wrapper + Container con LayoutOrder)
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local section = { Name = name }
 
-    -- Label de la sección (directamente al tab.Frame)
+    local wrapper = Create("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Parent = tab.Frame
+    })
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = wrapper
+    })
+
     local label = Create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 22),
         BackgroundTransparency = 1,
@@ -386,12 +394,25 @@ function ApexUI:CreateSection(tab, name)
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
         LayoutOrder = 1,
-        Parent = tab.Frame
+        Parent = wrapper
     })
 
-    -- Los elementos van directos al tab.Frame, no a un container separado
+    local container = Create("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.Y,
+        LayoutOrder = 2,
+        Parent = wrapper
+    })
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = container
+    })
+
     section.Label = label
-    section.Frame = tab.Frame
+    section.Wrapper = wrapper
+    section.Frame = container
 
     return section
 end
