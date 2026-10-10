@@ -226,7 +226,7 @@ Library:LoadConfig("MiConfig")
 ## 📁 Estructura del repositorio
 
 ```
-Noctis-UI/
+Apex-UI/
 ├── README.md          ← Este archivo
 ├── Source.lua         ← Código de la librería
 ├── Example.lua        ← Ejemplo de uso
