@@ -112,7 +112,6 @@ end)
 -- ============================================================
 local PlayerListSection = ListTab:CreateSection("Jugadores en Servidor")
 
--- Lista de nombres de jugadores
 local playerNames = {}
 for _, p in pairs(game.Players:GetPlayers()) do
     if p ~= game.Players.LocalPlayer then
@@ -142,10 +141,10 @@ local InventedItems = {
 
 InventedSection:CreateDropdown("Seleccionar Objeto", InventedItems, InventedItems[1], function(value)
     print("[Apex UI] Obtuviste: " .. value)
-    Library:Notify(":Apex UI", "¡ObtuvCreateiste: " .. value .. "!",Key 3)
+    Library:Notify("Apex UI", "¡Obtuviste: " .. value .. "!", 3)
 end)
 
-InventedSectionbind:CreateButton("Obtener Ob("jeto Aleatorio", function()
+InventedSection:CreateButton("Obtener Objeto Aleatorio", function()
     local randomItem = InventedItems[math.random(1, #InventedItems)]
     Library:Notify("Apex UI", "¡Obtuviste: " .. randomItem .. "!", 3)
     print("[Apex UI] Objeto aleatorio: " .. randomItem)
@@ -163,7 +162,7 @@ end)
 
 local KeybindSection = SettingsTab:CreateSection("Atajos")
 
-KeybindSectionTecla de Prueba", "F", function(key)
+KeybindSection:CreateKeybind("Tecla de Prueba", "F", function(key)
     Library:Notify("Apex UI", "Presionaste: " .. key.Name, 2)
 end)
 
