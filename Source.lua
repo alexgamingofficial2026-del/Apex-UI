@@ -7,7 +7,6 @@
 local ApexUI = {}
 ApexUI.__index = ApexUI
 
--- Servicios
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -15,7 +14,7 @@ local CoreGui = game:GetService("CoreGui")
 local Lighting = game:GetService("Lighting")
 
 -- ============================================================
--- CONFIGURACIÓN DE TEMAS
+-- TEMAS
 -- ============================================================
 local Themes = {
     Default = {
@@ -59,7 +58,7 @@ local Themes = {
 local CurrentTheme = Themes.Default
 
 -- ============================================================
--- FUNCIONES AUXILIARES
+-- AUXILIARES
 -- ============================================================
 local function Create(className, props)
     local inst = Instance.new(className)
@@ -103,14 +102,13 @@ local function MakeDraggable(frame, dragArea)
 end
 
 -- ============================================================
--- CREAR VENTANA
+-- VENTANA
 -- ============================================================
 function ApexUI:CreateWindow(title)
     local self = setmetatable({}, ApexUI)
     self.Tabs = {}
     self.CurrentTab = nil
 
-    -- ScreenGui
     self.ScreenGui = Create("ScreenGui", {
         Name = "ApexUI",
         ResetOnSpawn = false,
@@ -118,36 +116,33 @@ function ApexUI:CreateWindow(title)
         Parent = CoreGui
     })
 
-    -- Ventana principal
     self.Main = Create("Frame", {
         Name = "Main",
-        Size = UDim2.new(0, 560, 0, 420),
-        Position = UDim2.new(0.5, -280, 0.5, -210),
+        Size = UDim2.new(0, 480, 0, 360),
+        Position = UDim2.new(0.5, -240, 0.5, -180),
         BackgroundColor3 = CurrentTheme.Background,
         BorderSizePixel = 0,
         Active = true,
         Parent = self.ScreenGui
     })
 
-    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = self.Main })
+    Create("UICorner", { CornerRadius = UDim.new(0, 16), Parent = self.Main })
     Create("UIStroke", {
-        Color = CurrentTheme.Accent,
-        Thickness = 1,
-        Transparency = 0.4,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 2,
+        Transparency = 0.2,
         Parent = self.Main
     })
 
-    -- Barra de título
     local titleBar = Create("Frame", {
         Name = "TitleBar",
-        Size = UDim2.new(1, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 36),
         BackgroundColor3 = CurrentTheme.Header,
         BorderSizePixel = 0,
         Parent = self.Main
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = titleBar })
+    Create("UICorner", { CornerRadius = UDim.new(0, 16), Parent = titleBar })
 
-    -- Ocultar esquinas inferiores de la barra
     Create("Frame", {
         Size = UDim2.new(1, 0, 0, 10),
         Position = UDim2.new(0, 0, 1, -10),
@@ -158,41 +153,39 @@ function ApexUI:CreateWindow(title)
 
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
-        Position = UDim2.new(0, 15, 0, 0),
+        Position = UDim2.new(0, 14, 0, 0),
         BackgroundTransparency = 1,
         Text = title or "Apex UI",
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.GothamBold,
-        TextSize = 16,
+        TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = titleBar
     })
 
-    -- Botón minimizar
     local minBtn = Create("TextButton", {
-        Size = UDim2.new(0, 28, 0, 28),
-        Position = UDim2.new(1, -66, 0, 6),
+        Size = UDim2.new(0, 24, 0, 24),
+        Position = UDim2.new(1, -58, 0, 6),
         BackgroundColor3 = Color3.fromRGB(240, 180, 60),
         Text = "—",
         TextColor3 = Color3.new(1, 1, 1),
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
+        TextSize = 12,
         Parent = titleBar
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = minBtn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = minBtn })
 
-    -- Botón cerrar
     local closeBtn = Create("TextButton", {
-        Size = UDim2.new(0, 28, 0, 28),
-        Position = UDim2.new(1, -34, 0, 6),
+        Size = UDim2.new(0, 24, 0, 24),
+        Position = UDim2.new(1, -30, 0, 6),
         BackgroundColor3 = Color3.fromRGB(220, 60, 60),
         Text = "X",
         TextColor3 = Color3.new(1, 1, 1),
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
+        TextSize = 12,
         Parent = titleBar
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = closeBtn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = closeBtn })
 
     closeBtn.MouseButton1Click:Connect(function()
         self.ScreenGui:Destroy()
@@ -201,16 +194,14 @@ function ApexUI:CreateWindow(title)
     minBtn.MouseButton1Click:Connect(function()
         self.Main.Visible = not self.Main.Visible
         self.Main.Visible = true
-        self.Main.Size = UDim2.new(0, 560, 0, self.Main.Size.Y.Offset == 420 and 40 or 420)
     end)
 
     MakeDraggable(self.Main, titleBar)
 
-    -- Sidebar de pestañas
     self.Sidebar = Create("ScrollingFrame", {
         Name = "Sidebar",
-        Size = UDim2.new(0, 150, 1, -50),
-        Position = UDim2.new(0, 10, 0, 45),
+        Size = UDim2.new(0, 130, 1, -46),
+        Position = UDim2.new(0, 10, 0, 42),
         BackgroundColor3 = CurrentTheme.Header,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -219,7 +210,7 @@ function ApexUI:CreateWindow(title)
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         Parent = self.Main
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = self.Sidebar })
+    Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = self.Sidebar })
     Create("UIListLayout", {
         Padding = UDim.new(0, 5),
         SortOrder = Enum.SortOrder.LayoutOrder,
@@ -232,36 +223,35 @@ function ApexUI:CreateWindow(title)
         Parent = self.Sidebar
     })
 
-    -- Contenedor de contenido
     self.Content = Create("Frame", {
         Name = "Content",
-        Size = UDim2.new(1, -180, 1, -50),
-        Position = UDim2.new(0, 170, 0, 45),
+        Size = UDim2.new(1, -156, 1, -46),
+        Position = UDim2.new(0, 146, 0, 42),
         BackgroundColor3 = CurrentTheme.Header,
         BorderSizePixel = 0,
         Parent = self.Main
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = self.Content })
+    Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = self.Content })
 
     return self
 end
 
 -- ============================================================
--- CREAR PESTAÑA
+-- PESTAÑAS
 -- ============================================================
 function ApexUI:CreateTab(name)
     local tab = { Name = name, Sections = {} }
 
     local btn = Create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Background,
         Text = name,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         Parent = self.Sidebar
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = btn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
     local frame = Create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
@@ -312,27 +302,39 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- CREAR SECCIÓN
+-- SECCIONES
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local section = { Name = name }
 
+    local wrapper = Create("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Parent = tab.Frame
+    })
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 6),
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = wrapper
+    })
+
     local label = Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 25),
+        Size = UDim2.new(1, 0, 0, 22),
         BackgroundTransparency = 1,
         Text = "• " .. name,
         TextColor3 = CurrentTheme.Accent,
         Font = Enum.Font.GothamBold,
-        TextSize = 13,
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = tab.Frame
+        Parent = wrapper
     })
 
     local container = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 0),
         BackgroundTransparency = 1,
         AutomaticSize = Enum.AutomaticSize.Y,
-        Parent = tab.Frame
+        Parent = wrapper
     })
     Create("UIListLayout", {
         Padding = UDim.new(0, 6),
@@ -351,19 +353,19 @@ end
 -- ============================================================
 function ApexUI:CreateButton(section, name, callback)
     local btn = Create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         Text = name,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = btn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = btn })
     Create("UIStroke", {
-        Color = CurrentTheme.Accent,
+        Color = Color3.fromRGB(255, 255, 255),
         Thickness = 1,
-        Transparency = 0.7,
+        Transparency = 0.5,
         Parent = btn
     })
 
@@ -387,11 +389,17 @@ function ApexUI:CreateToggle(section, name, default, callback)
     local state = default or false
 
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -70, 1, 0),
@@ -400,14 +408,14 @@ function ApexUI:CreateToggle(section, name, default, callback)
         Text = name,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = container
     })
 
     local toggleBtn = Create("TextButton", {
-        Size = UDim2.new(0, 44, 0, 22),
-        Position = UDim2.new(1, -56, 0.5, -11),
+        Size = UDim2.new(0, 40, 0, 20),
+        Position = UDim2.new(1, -50, 0.5, -10),
         BackgroundColor3 = state and CurrentTheme.Accent or CurrentTheme.ToggleOff,
         Text = "",
         Parent = container
@@ -415,8 +423,8 @@ function ApexUI:CreateToggle(section, name, default, callback)
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = toggleBtn })
 
     local circle = Create("Frame", {
-        Size = UDim2.new(0, 18, 0, 18),
-        Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9),
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
         BackgroundColor3 = Color3.new(1, 1, 1),
         Parent = toggleBtn
     })
@@ -425,7 +433,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
     toggleBtn.MouseButton1Click:Connect(function()
         state = not state
         toggleBtn.BackgroundColor3 = state and CurrentTheme.Accent or CurrentTheme.ToggleOff
-        circle.Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
+        circle.Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
         if callback then callback(state) end
     end)
 
@@ -441,15 +449,21 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
     local value = default or min
 
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 50),
+        Size = UDim2.new(1, 0, 0, 44),
         BackgroundColor3 = CurrentTheme.Element,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     Create("TextLabel", {
-        Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.new(0, 10, 0, 6),
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.new(0, 10, 0, 5),
         BackgroundTransparency = 1,
         Text = name .. ": " .. value,
         TextColor3 = CurrentTheme.Text,
@@ -460,8 +474,8 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
     })
 
     local bar = Create("Frame", {
-        Size = UDim2.new(1, -20, 0, 8),
-        Position = UDim2.new(0, 10, 0, 32),
+        Size = UDim2.new(1, -20, 0, 6),
+        Position = UDim2.new(0, 10, 0, 28),
         BackgroundColor3 = CurrentTheme.Background,
         Parent = container
     })
@@ -516,28 +530,34 @@ end
 -- ============================================================
 function ApexUI:CreateDropdown(section, name, options, default, callback)
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         ClipsDescendants = true,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     local selected = default or (options and options[1]) or "Ninguno"
 
     local header = Create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundTransparency = 1,
-        Text = name .. "  ▾",
+        Text = name .. ": " .. tostring(selected) .. "  ▾",
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         Parent = container
     })
 
     local listFrame = Create("ScrollingFrame", {
         Size = UDim2.new(1, -10, 0, 0),
-        Position = UDim2.new(0, 5, 0, 36),
+        Position = UDim2.new(0, 5, 0, 32),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -559,20 +579,20 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
         end
         for _, opt in pairs(options) do
             local optBtn = Create("TextButton", {
-                Size = UDim2.new(1, 0, 0, 26),
+                Size = UDim2.new(1, 0, 0, 24),
                 BackgroundColor3 = CurrentTheme.Background,
                 Text = tostring(opt),
                 TextColor3 = CurrentTheme.Text,
                 Font = Enum.Font.Gotham,
-                TextSize = 12,
+                TextSize = 11,
                 Parent = listFrame
             })
-            Create("UICorner", { CornerRadius = UDim.new(0, 4), Parent = optBtn })
+            Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = optBtn })
             optBtn.MouseButton1Click:Connect(function()
                 selected = opt
                 header.Text = name .. ": " .. tostring(opt) .. "  ▾"
                 open = false
-                container.Size = UDim2.new(1, 0, 0, 34)
+                container.Size = UDim2.new(1, 0, 0, 30)
                 listFrame.Size = UDim2.new(1, -10, 0, 0)
                 if callback then callback(opt) end
             end)
@@ -583,16 +603,14 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
         open = not open
         if open then
             refreshList()
-            local height = math.min(#options * 29, 130)
-            container.Size = UDim2.new(1, 0, 0, 34 + height + 5)
+            local height = math.min(#options * 27, 120)
+            container.Size = UDim2.new(1, 0, 0, 30 + height + 5)
             listFrame.Size = UDim2.new(1, -10, 0, height)
         else
-            container.Size = UDim2.new(1, 0, 0, 34)
+            container.Size = UDim2.new(1, 0, 0, 30)
             listFrame.Size = UDim2.new(1, -10, 0, 0)
         end
     end)
-
-    header.Text = name .. ": " .. tostring(selected) .. "  ▾"
 
     return header
 end
@@ -602,11 +620,17 @@ end
 -- ============================================================
 function ApexUI:CreateTextbox(section, name, placeholder, callback)
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     local box = Create("TextBox", {
         Size = UDim2.new(1, -20, 1, -10),
@@ -617,7 +641,7 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
         PlaceholderColor3 = CurrentTheme.SubText,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         ClearTextOnFocus = false,
         Parent = container
@@ -631,15 +655,21 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
 end
 
 -- ============================================================
--- COLORPICKER (simplificado con presets)
+-- COLORPICKER
 -- ============================================================
 function ApexUI:CreateColorpicker(section, name, default, callback)
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -60, 1, 0),
@@ -648,19 +678,19 @@ function ApexUI:CreateColorpicker(section, name, default, callback)
         Text = name,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = container
     })
 
     local colorBtn = Create("TextButton", {
-        Size = UDim2.new(0, 40, 0, 22),
-        Position = UDim2.new(1, -52, 0.5, -11),
+        Size = UDim2.new(0, 36, 0, 20),
+        Position = UDim2.new(1, -46, 0.5, -10),
         BackgroundColor3 = default or Color3.fromRGB(255, 0, 0),
         Text = "",
         Parent = container
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = colorBtn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = colorBtn })
 
     local palette = {
         Color3.fromRGB(255, 0, 0),
@@ -690,11 +720,17 @@ end
 -- ============================================================
 function ApexUI:CreateKeybind(section, name, defaultKey, callback)
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 34),
+        Size = UDim2.new(1, 0, 0, 30),
         BackgroundColor3 = CurrentTheme.Element,
         Parent = section.Frame
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = container })
+    Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1,
+        Transparency = 0.6,
+        Parent = container
+    })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
@@ -703,22 +739,22 @@ function ApexUI:CreateKeybind(section, name, defaultKey, callback)
         Text = name,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 13,
+        TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = container
     })
 
     local keyBtn = Create("TextButton", {
-        Size = UDim2.new(0, 60, 0, 22),
-        Position = UDim2.new(1, -72, 0.5, -11),
+        Size = UDim2.new(0, 56, 0, 20),
+        Position = UDim2.new(1, -68, 0.5, -10),
         BackgroundColor3 = CurrentTheme.Background,
         Text = defaultKey or "NONE",
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.GothamBold,
-        TextSize = 12,
+        TextSize = 11,
         Parent = container
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = keyBtn })
+    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = keyBtn })
 
     local listening = false
 
@@ -751,12 +787,12 @@ end
 -- ============================================================
 function ApexUI:CreateLabel(section, text)
     local label = Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 24),
+        Size = UDim2.new(1, 0, 0, 22),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = CurrentTheme.SubText,
         Font = Enum.Font.Gotham,
-        TextSize = 12,
+        TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = section.Frame
     })
@@ -774,39 +810,40 @@ function ApexUI:Notify(title, text, duration)
     local myIndex = notifCount
 
     local notif = Create("Frame", {
-        Size = UDim2.new(0, 300, 0, 70),
-        Position = UDim2.new(1, -320, 0, 20 + (myIndex - 1) * 80),
+        Size = UDim2.new(0, 280, 0, 64),
+        Position = UDim2.new(1, -300, 0, 20 + (myIndex - 1) * 74),
         BackgroundColor3 = CurrentTheme.Header,
         BorderSizePixel = 0,
         Parent = self.ScreenGui
     })
-    Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = notif })
+    Create("UICorner", { CornerRadius = UDim.new(0, 14), Parent = notif })
     Create("UIStroke", {
-        Color = CurrentTheme.Accent,
-        Thickness = 1,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 2,
+        Transparency = 0.2,
         Parent = notif
     })
 
     Create("TextLabel", {
-        Size = UDim2.new(1, -20, 0, 22),
+        Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.new(0, 12, 0, 8),
         BackgroundTransparency = 1,
         Text = title,
         TextColor3 = CurrentTheme.Accent,
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
+        TextSize = 13,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = notif
     })
 
     Create("TextLabel", {
-        Size = UDim2.new(1, -20, 0, 22),
-        Position = UDim2.new(0, 12, 0, 32),
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.new(0, 12, 0, 30),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
-        TextSize = 12,
+        TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextWrapped = true,
         Parent = notif
@@ -842,7 +879,7 @@ function ApexUI:GetThemes()
 end
 
 -- ============================================================
--- CONFIGURACIONES (simplificado)
+-- CONFIGURACIONES
 -- ============================================================
 local Configs = {}
 
@@ -860,6 +897,6 @@ function ApexUI:DeleteConfig(name)
 end
 
 -- ============================================================
--- RETORNAR LIBRERÍA
+-- RETORNAR
 -- ============================================================
 return ApexUI
