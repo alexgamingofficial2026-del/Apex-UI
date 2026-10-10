@@ -246,6 +246,7 @@ function ApexUI:CreateWindow(title)
 
     MakeDraggable(self.Main, titleBar)
 
+    -- Sidebar
     self.Sidebar = Create("ScrollingFrame", {
         Name = "Sidebar",
         Size = UDim2.new(0, 115, 1, -46),
@@ -273,6 +274,7 @@ function ApexUI:CreateWindow(title)
         Parent = self.Sidebar
     })
 
+    -- Content
     self.Content = Create("Frame", {
         Name = "Content",
         Size = UDim2.new(1, -135, 1, -46),
@@ -307,7 +309,7 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
-    -- ScrollingFrame con padding
+    -- ScrollingFrame con tamaño de Canvas fijo grande (SOLUCIÓN AL PROBLEMA)
     local frame = Create("ScrollingFrame", {
         Size = UDim2.new(1, -10, 1, -10),
         Position = UDim2.new(0, 5, 0, 5),
@@ -315,8 +317,7 @@ function ApexUI:CreateTab(name)
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = CurrentTheme.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 2000),
         Visible = false,
         Parent = self.Content
     })
@@ -369,23 +370,13 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- SECCIONES (SIMPLE: LABEL + CONTAINER)
+-- SECCIONES
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local section = { Name = name }
 
-    local label = Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 22),
-        BackgroundTransparency = 1,
-        Text = "▸ " .. name,
-        TextColor3 = CurrentTheme.Accent,
-        Font = Enum.Font.GothamBold,
-        TextSize = 11,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = tab.Frame
-    })
-
-    local container = Create("Frame", {
+    -- Frame contenedor de la sección
+    local sectionFrame = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 0),
         BackgroundTransparency = 1,
         AutomaticSize = Enum.AutomaticSize.Y,
@@ -394,10 +385,38 @@ function ApexUI:CreateSection(tab, name)
     Create("UIListLayout", {
         Padding = UDim.new(0, 5),
         SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = sectionFrame
+    })
+
+    -- Label de la sección
+    local label = Create("TextLabel", {
+        Size = UDim2.new(1, 0, 0, 22),
+        BackgroundTransparency = 1,
+        Text = "▸ " .. name,
+        TextColor3 = CurrentTheme.Accent,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        LayoutOrder = 0,
+        Parent = sectionFrame
+    })
+
+    -- Container de los elementos
+    local container = Create("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.Y,
+        LayoutOrder = 1,
+        Parent = sectionFrame
+    })
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder,
         Parent = container
     })
 
     section.Label = label
+    section.Container = sectionFrame
     section.Frame = container
 
     return section
