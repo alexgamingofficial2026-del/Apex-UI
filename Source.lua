@@ -2,7 +2,6 @@
 -- APEX UI - Librería de interfaz para Roblox
 -- Creador: AlexOfficial
 -- Licencia: MIT
--- Estilo: Speed Hub X
 -- ============================================================
 
 local ApexUI = {}
@@ -17,46 +16,6 @@ local CoreGui = game:GetService("CoreGui")
 -- TEMAS
 -- ============================================================
 local Themes = {
-    Default = {
-        Background = Color3.fromRGB(18, 18, 22),
-        Header = Color3.fromRGB(25, 25, 32),
-        Accent = Color3.fromRGB(155, 92, 246),
-        Text = Color3.fromRGB(255, 255, 255),
-        SubText = Color3.fromRGB(160, 160, 175),
-        Element = Color3.fromRGB(32, 32, 40),
-        ToggleOff = Color3.fromRGB(55, 55, 65),
-        Transparency = 0.15
-    },
-    Dark = {
-        Background = Color3.fromRGB(10, 10, 14),
-        Header = Color3.fromRGB(18, 18, 24),
-        Accent = Color3.fromRGB(120, 80, 220),
-        Text = Color3.fromRGB(240, 240, 245),
-        SubText = Color3.fromRGB(140, 140, 155),
-        Element = Color3.fromRGB(25, 25, 32),
-        ToggleOff = Color3.fromRGB(45, 45, 55),
-        Transparency = 0.2
-    },
-    Light = {
-        Background = Color3.fromRGB(245, 245, 250),
-        Header = Color3.fromRGB(235, 235, 242),
-        Accent = Color3.fromRGB(100, 60, 200),
-        Text = Color3.fromRGB(25, 25, 35),
-        SubText = Color3.fromRGB(85, 85, 95),
-        Element = Color3.fromRGB(225, 225, 235),
-        ToggleOff = Color3.fromRGB(190, 190, 200),
-        Transparency = 0.1
-    },
-    Amethyst = {
-        Background = Color3.fromRGB(25, 18, 38),
-        Header = Color3.fromRGB(35, 25, 50),
-        Accent = Color3.fromRGB(170, 100, 255),
-        Text = Color3.fromRGB(255, 250, 255),
-        SubText = Color3.fromRGB(190, 170, 210),
-        Element = Color3.fromRGB(45, 32, 62),
-        ToggleOff = Color3.fromRGB(70, 52, 92),
-        Transparency = 0.15
-    },
     SpeedHub = {
         Background = Color3.fromRGB(12, 12, 16),
         Header = Color3.fromRGB(20, 20, 26),
@@ -65,6 +24,46 @@ local Themes = {
         SubText = Color3.fromRGB(150, 150, 160),
         Element = Color3.fromRGB(28, 28, 36),
         ToggleOff = Color3.fromRGB(50, 50, 60),
+        Transparency = 0.15
+    },
+    Default = {
+        Background = Color3.fromRGB(30, 30, 35),
+        Header = Color3.fromRGB(40, 40, 48),
+        Accent = Color3.fromRGB(155, 92, 246),
+        Text = Color3.fromRGB(255, 255, 255),
+        SubText = Color3.fromRGB(180, 180, 190),
+        Element = Color3.fromRGB(45, 45, 55),
+        ToggleOff = Color3.fromRGB(70, 70, 80),
+        Transparency = 0.15
+    },
+    Dark = {
+        Background = Color3.fromRGB(15, 15, 18),
+        Header = Color3.fromRGB(22, 22, 28),
+        Accent = Color3.fromRGB(120, 80, 220),
+        Text = Color3.fromRGB(240, 240, 245),
+        SubText = Color3.fromRGB(150, 150, 160),
+        Element = Color3.fromRGB(30, 30, 38),
+        ToggleOff = Color3.fromRGB(55, 55, 65),
+        Transparency = 0.2
+    },
+    Light = {
+        Background = Color3.fromRGB(240, 240, 245),
+        Header = Color3.fromRGB(225, 225, 235),
+        Accent = Color3.fromRGB(100, 60, 200),
+        Text = Color3.fromRGB(30, 30, 40),
+        SubText = Color3.fromRGB(90, 90, 100),
+        Element = Color3.fromRGB(215, 215, 225),
+        ToggleOff = Color3.fromRGB(180, 180, 190),
+        Transparency = 0.1
+    },
+    Amethyst = {
+        Background = Color3.fromRGB(25, 18, 38),
+        Header = Color3.fromRGB(35, 25, 50),
+        Accent = Color3.fromRGB(170, 100, 255),
+        Text = Color3.fromRGB(255, 250, 255),
+        SubText = Color3.fromRGB(200, 180, 220),
+        Element = Color3.fromRGB(45, 32, 62),
+        ToggleOff = Color3.fromRGB(70, 52, 92),
         Transparency = 0.15
     }
 }
@@ -141,7 +140,6 @@ function ApexUI:CreateWindow(title)
         Parent = CoreGui
     })
 
-    -- Ventana más pequeña y con transparencia
     self.Main = Create("Frame", {
         Name = "Main",
         Size = UDim2.new(0, 420, 0, 320),
@@ -189,7 +187,6 @@ function ApexUI:CreateWindow(title)
         Parent = titleBar
     })
 
-    -- Indicador de color (línea accent)
     Create("Frame", {
         Size = UDim2.new(0, 3, 0, 20),
         Position = UDim2.new(0, 12, 0.5, -10),
@@ -197,7 +194,6 @@ function ApexUI:CreateWindow(title)
         BorderSizePixel = 0,
         Parent = titleBar
     })
-    Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = titleBar:FindFirstChildWhichIsA("Frame", true) })
 
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
@@ -211,7 +207,6 @@ function ApexUI:CreateWindow(title)
         Parent = titleBar
     })
 
-    -- Botones minimizar/cerrar
     local minBtn = Create("TextButton", {
         Size = UDim2.new(0, 22, 0, 22),
         Position = UDim2.new(1, -52, 0, 6),
@@ -240,20 +235,6 @@ function ApexUI:CreateWindow(title)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = closeBtn })
 
-    -- Hover animado
-    minBtn.MouseEnter:Connect(function()
-        Tween(minBtn, 0.15, { BackgroundTransparency = 0 })
-    end)
-    minBtn.MouseLeave:Connect(function()
-        Tween(minBtn, 0.15, { BackgroundTransparency = 0.1 })
-    end)
-    closeBtn.MouseEnter:Connect(function()
-        Tween(closeBtn, 0.15, { BackgroundTransparency = 0 })
-    end)
-    closeBtn.MouseLeave:Connect(function()
-        Tween(closeBtn, 0.15, { BackgroundTransparency = 0.1 })
-    end)
-
     closeBtn.MouseButton1Click:Connect(function()
         Tween(self.Main, 0.25, {
             Size = UDim2.new(0, 0, 0, 0),
@@ -272,7 +253,7 @@ function ApexUI:CreateWindow(title)
 
     MakeDraggable(self.Main, titleBar)
 
-    -- Sidebar con animación
+    -- Sidebar
     self.Sidebar = Create("ScrollingFrame", {
         Name = "Sidebar",
         Size = UDim2.new(0, 115, 1, -46),
@@ -300,7 +281,7 @@ function ApexUI:CreateWindow(title)
         Parent = self.Sidebar
     })
 
-    -- Contenido
+    -- Content
     self.Content = Create("Frame", {
         Name = "Content",
         Size = UDim2.new(1, -135, 1, -46),
@@ -320,7 +301,7 @@ end
 -- PESTAÑAS
 -- ============================================================
 function ApexUI:CreateTab(name)
-    local tab = { Name = name, Sections = {} }
+    local tab = { Name = name }
 
     local btn = Create("TextButton", {
         Size = UDim2.new(1, 0, 0, 28),
@@ -335,6 +316,7 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
+    -- Frame contenedor del tab (con ScrollBar funcional)
     local frame = Create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
@@ -381,10 +363,6 @@ function ApexUI:CreateTab(name)
         frame.Visible = true
         Tween(btn, 0.2, { BackgroundColor3 = CurrentTheme.Accent })
         self.CurrentTab = tab
-
-        -- Animación de apertura del frame
-        frame.Position = UDim2.new(0, 5, 0, 0)
-        Tween(frame, 0.2, { Position = UDim2.new(0, 0, 0, 0) })
     end)
 
     table.insert(self.Tabs, tab)
@@ -469,23 +447,16 @@ function ApexUI:CreateButton(section, name, callback)
     })
 
     btn.MouseEnter:Connect(function()
-        Tween(btn, 0.15, {
-            BackgroundColor3 = CurrentTheme.Accent,
-            BackgroundTransparency = 0
-        })
+        Tween(btn, 0.15, { BackgroundColor3 = CurrentTheme.Accent, BackgroundTransparency = 0 })
     end)
     btn.MouseLeave:Connect(function()
-        Tween(btn, 0.15, {
-            BackgroundColor3 = CurrentTheme.Element,
-            BackgroundTransparency = 0.2
-        })
+        Tween(btn, 0.15, { BackgroundColor3 = CurrentTheme.Element, BackgroundTransparency = 0.2 })
     end)
 
     btn.MouseButton1Click:Connect(function()
-        -- Animación de click
-        Tween(btn, 0.08, { Size = UDim2.new(0.97, 0, 0, 28) }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        Tween(btn, 0.08, { Size = UDim2.new(0.97, 0, 0, 28) })
         task.wait(0.08)
-        Tween(btn, 0.1, { Size = UDim2.new(1, 0, 0, 28) }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        Tween(btn, 0.1, { Size = UDim2.new(1, 0, 0, 28) })
         if callback then callback() end
     end)
 
@@ -544,9 +515,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
 
     toggleBtn.MouseButton1Click:Connect(function()
         state = not state
-        Tween(toggleBtn, 0.2, {
-            BackgroundColor3 = state and CurrentTheme.Accent or CurrentTheme.ToggleOff
-        })
+        Tween(toggleBtn, 0.2, { BackgroundColor3 = state and CurrentTheme.Accent or CurrentTheme.ToggleOff })
         Tween(circle, 0.2, {
             Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
         })
@@ -578,7 +547,7 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
         Parent = container
     })
 
-    Create("TextLabel", {
+    local label = Create("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
         Position = UDim2.new(0, 10, 0, 5),
         BackgroundTransparency = 1,
@@ -608,7 +577,6 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
     Create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = fill })
 
     local dragging = false
-    local label = container:FindFirstChildOfClass("TextLabel")
 
     local function updateFromInput(input)
         local relX = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
@@ -667,7 +635,7 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
     local header = Create("TextButton", {
         Size = UDim2.new(1, 0, 0, 28),
         BackgroundTransparency = 1,
-        Text = name .. ": " .. tostring(selected) .. "  ▾",
+        Text = name .. ": " .. tostring(selected) .. "  ▼",
         TextColor3 = CurrentTheme.Text,
         Font = Enum.Font.Gotham,
         TextSize = 11,
@@ -720,7 +688,7 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
 
             optBtn.MouseButton1Click:Connect(function()
                 selected = opt
-                header.Text = name .. ": " .. tostring(opt) .. "  ▾"
+                header.Text = name .. ": " .. tostring(opt) .. "  ▼"
                 open = false
                 Tween(container, 0.2, { Size = UDim2.new(1, 0, 0, 28) })
                 listFrame.Size = UDim2.new(1, -8, 0, 0)
@@ -781,7 +749,7 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
     box.Focused:Connect(function()
         Tween(container, 0.15, { BackgroundColor3 = CurrentTheme.Accent })
     end)
-    box.FocusLost:Connect(function(enterPressed)
+    box.FocusLost:Connect(function()
         Tween(container, 0.15, { BackgroundColor3 = CurrentTheme.Element })
         if callback then callback(box.Text) end
     end)
@@ -953,7 +921,7 @@ function ApexUI:Notify(title, text, duration)
 
     local notif = Create("Frame", {
         Size = UDim2.new(0, 250, 0, 56),
-        Position = UDim2.new(1, 10, 0, 20 + (myIndex - 1) * 66),
+        Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66),
         BackgroundColor3 = CurrentTheme.Header,
         BackgroundTransparency = CurrentTheme.Transparency,
         BorderSizePixel = 0,
@@ -967,7 +935,6 @@ function ApexUI:Notify(title, text, duration)
         Parent = notif
     })
 
-    -- Línea accent
     Create("Frame", {
         Size = UDim2.new(0, 3, 0, 30),
         Position = UDim2.new(0, 8, 0.5, -15),
@@ -1001,13 +968,10 @@ function ApexUI:Notify(title, text, duration)
         Parent = notif
     })
 
-    -- Animación de entrada
-    notif.Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66)
     Tween(notif, 0.3, {
         Position = UDim2.new(1, -260, 0, 20 + (myIndex - 1) * 66)
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
-    -- Animación de salida
     task.delay(duration, function()
         Tween(notif, 0.25, {
             Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66)
