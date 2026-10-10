@@ -1,12 +1,6 @@
--- ============================================================
--- APEX UI v1.0 - Delta Compatible
--- Creador: AlexOfficial
--- ============================================================
-
 local ApexUI = {}
 ApexUI.__index = ApexUI
 
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local Theme = {
@@ -15,19 +9,13 @@ local Theme = {
     Accent = Color3.fromRGB(255, 60, 60),
     Text = Color3.fromRGB(255, 255, 255),
     SubText = Color3.fromRGB(150, 150, 160),
-    Element = Color3.fromRGB(28, 28, 36),
-    ToggleOff = Color3.fromRGB(50, 50, 60)
+    Element = Color3.fromRGB(28, 28, 36)
 }
 
 local function Create(class, props)
     local i = Instance.new(class)
     for k, v in pairs(props or {}) do i[k] = v end
     return i
-end
-
--- Delta fix: usar SIEMPRE PlayerGui
-local function GetGuiParent()
-    return game.Players.LocalPlayer:WaitForChild("PlayerGui")
 end
 
 -- ============================================================
@@ -43,7 +31,7 @@ function ApexUI:CreateWindow(title)
         ResetOnSpawn = false,
         DisplayOrder = 999999,
         IgnoreGuiInset = true,
-        Parent = GetGuiParent()
+        Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     })
 
     self.Main = Create("Frame", {
@@ -99,23 +87,6 @@ function ApexUI:CreateWindow(title)
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = closeBtn })
     closeBtn.MouseButton1Click:Connect(function() self.ScreenGui:Destroy() end)
 
-    local minBtn = Create("TextButton", {
-        Size = UDim2.new(0, 22, 0, 22),
-        Position = UDim2.new(1, -52, 0, 6),
-        BackgroundColor3 = Color3.fromRGB(240, 180, 60),
-        Text = "—",
-        TextColor3 = Color3.new(1,1,1),
-        Font = Enum.Font.GothamBold,
-        TextSize = 11,
-        AutoButtonColor = false,
-        Parent = titleBar
-    })
-    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = minBtn })
-    minBtn.MouseButton1Click:Connect(function()
-        local isMin = self.Main.Size.Y.Offset < 100
-        self.Main.Size = isMin and UDim2.new(0, 420, 0, 320) or UDim2.new(0, 420, 0, 34)
-    end)
-
     -- Hacer arrastrable
     local dragging, dragStart, startPos
     titleBar.InputBegan:Connect(function(input)
@@ -140,19 +111,17 @@ function ApexUI:CreateWindow(title)
         end
     end)
 
-    self.Sidebar = Create("ScrollingFrame", {
+    -- Sidebar (Frame, no ScrollingFrame)
+    self.Sidebar = Create("Frame", {
         Size = UDim2.new(0, 115, 1, -46),
         Position = UDim2.new(0, 10, 0, 42),
         BackgroundColor3 = Theme.Header,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        CanvasSize = UDim2.new(0, 0, 0, 2000),
         Parent = self.Main
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = self.Sidebar })
-    Create("UIListLayout", { Padding = UDim.new(0, 4), Parent = self.Sidebar })
-    Create("UIPadding", { PaddingTop = UDim.new(0,6), PaddingLeft = UDim.new(0,6), PaddingRight = UDim.new(0,6), PaddingBottom = UDim.new(0,6), Parent = self.Sidebar })
 
+    -- Content (Frame normal)
     self.Content = Create("Frame", {
         Size = UDim2.new(1, -135, 1, -46),
         Position = UDim2.new(0, 125, 0, 42),
@@ -167,13 +136,14 @@ function ApexUI:CreateWindow(title)
 end
 
 -- ============================================================
--- TAB
+-- TAB (usa Frame con posición absoluta, sin ScrollingFrame)
 -- ============================================================
 function ApexUI:CreateTab(name)
-    local tab = { Name = name }
+    local tab = { Name = name, Elements = {} }
 
     local btn = Create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -12, 0, 28),
+        Position = UDim2.new(0, 6, 0, 6 + (#self.Tabs * 32)),
         BackgroundColor3 = Theme.Background,
         Text = name,
         TextColor3 = Theme.Text,
@@ -184,20 +154,18 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
-    local frame = Create("ScrollingFrame", {
+    -- Frame con posición absoluta para los elementos (sin ScrollingFrame)
+    local frame = Create("Frame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        CanvasSize = UDim2.new(0, 0, 0, 2000),
         Visible = false,
         Parent = self.Content
     })
-    Create("UIListLayout", { Padding = UDim.new(0, 6), Parent = frame })
-    Create("UIPadding", { PaddingTop = UDim.new(0,8), PaddingLeft = UDim.new(0,8), PaddingRight = UDim.new(0,8), PaddingBottom = UDim.new(0,8), Parent = frame })
 
     tab.Button = btn
     tab.Frame = frame
+    tab.Y = 10  -- Posición Y del próximo elemento
 
     btn.MouseButton1Click:Connect(function()
         for _, t in pairs(self.Tabs) do
@@ -224,7 +192,8 @@ end
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local label = Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 22),
+        Size = UDim2.new(1, -16, 0, 22),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundTransparency = 1,
         Text = "▸ " .. name,
         TextColor3 = Theme.Accent,
@@ -233,20 +202,24 @@ function ApexUI:CreateSection(tab, name)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = tab.Frame
     })
+    tab.Y = tab.Y + 26
 
     return {
         Name = name,
         Label = label,
-        Frame = tab.Frame
+        Frame = tab.Frame,
+        Tab = tab
     }
 end
 
 -- ============================================================
--- BOTÓN
+-- BOTÓN (posición absoluta)
 -- ============================================================
 function ApexUI:CreateButton(section, name, callback)
+    local tab = section.Tab
     local btn = Create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Text = name,
         TextColor3 = Theme.Text,
@@ -257,6 +230,7 @@ function ApexUI:CreateButton(section, name, callback)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = btn })
+    tab.Y = tab.Y + 32
 
     btn.MouseButton1Click:Connect(function()
         if callback then callback() end
@@ -266,18 +240,21 @@ function ApexUI:CreateButton(section, name, callback)
 end
 
 -- ============================================================
--- TOGGLE
+-- TOGGLE (posición absoluta)
 -- ============================================================
 function ApexUI:CreateToggle(section, name, default, callback)
+    local tab = section.Tab
     local state = default or false
 
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
+    tab.Y = tab.Y + 32
 
     Create("TextLabel", {
         Size = UDim2.new(1, -60, 1, 0),
@@ -294,7 +271,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
     local toggleBtn = Create("TextButton", {
         Size = UDim2.new(0, 36, 0, 18),
         Position = UDim2.new(1, -46, 0.5, -9),
-        BackgroundColor3 = state and Theme.Accent or Theme.ToggleOff,
+        BackgroundColor3 = state and Theme.Accent or Theme.Element,
         Text = "",
         AutoButtonColor = false,
         Parent = container
@@ -303,7 +280,7 @@ function ApexUI:CreateToggle(section, name, default, callback)
 
     toggleBtn.MouseButton1Click:Connect(function()
         state = not state
-        toggleBtn.BackgroundColor3 = state and Theme.Accent or Theme.ToggleOff
+        toggleBtn.BackgroundColor3 = state and Theme.Accent or Theme.Element
         if callback then callback(state) end
     end)
 
@@ -311,20 +288,23 @@ function ApexUI:CreateToggle(section, name, default, callback)
 end
 
 -- ============================================================
--- SLIDER
+-- SLIDER (posición absoluta)
 -- ============================================================
 function ApexUI:CreateSlider(section, name, min, max, default, callback)
+    local tab = section.Tab
     min = min or 0
     max = max or 100
     local value = default or min
 
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 42),
+        Size = UDim2.new(1, -16, 0, 42),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
+    tab.Y = tab.Y + 46
 
     local label = Create("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
@@ -382,11 +362,13 @@ function ApexUI:CreateSlider(section, name, min, max, default, callback)
 end
 
 -- ============================================================
--- DROPDOWN
+-- DROPDOWN (posición absoluta, SIN ScrollingFrame)
 -- ============================================================
 function ApexUI:CreateDropdown(section, name, options, default, callback)
+    local tab = section.Tab
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         ClipsDescendants = true,
         Parent = section.Frame
@@ -407,15 +389,14 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
         Parent = container
     })
 
-    local listFrame = Create("ScrollingFrame", {
+    local listFrame = Create("Frame", {
         Size = UDim2.new(1, -8, 0, 0),
         Position = UDim2.new(0, 4, 0, 30),
         BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        CanvasSize = UDim2.new(0, 0, 0, 2000),
         Parent = container
     })
-    Create("UIListLayout", { Padding = UDim.new(0, 2), Parent = listFrame })
+
+    tab.Y = tab.Y + 32
 
     local open = false
     header.MouseButton1Click:Connect(function()
@@ -424,9 +405,10 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
             for _, child in pairs(listFrame:GetChildren()) do
                 if child:IsA("TextButton") then child:Destroy() end
             end
-            for _, opt in pairs(options) do
+            for i, opt in pairs(options) do
                 local optBtn = Create("TextButton", {
                     Size = UDim2.new(1, 0, 0, 22),
+                    Position = UDim2.new(0, 0, 0, (i - 1) * 24),
                     BackgroundColor3 = Theme.Background,
                     Text = tostring(opt),
                     TextColor3 = Theme.Text,
@@ -439,16 +421,19 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
                     selected = opt
                     header.Text = name .. ": " .. tostring(opt) .. "  ▼"
                     open = false
-                    container.Size = UDim2.new(1, 0, 0, 28)
+                    container.Size = UDim2.new(1, -16, 0, 28)
+                    listFrame.Visible = false
                     listFrame.Size = UDim2.new(1, -8, 0, 0)
                     if callback then callback(opt) end
                 end)
             end
             local height = math.min(#options * 24, 110)
-            container.Size = UDim2.new(1, 0, 0, 28 + height + 4)
+            container.Size = UDim2.new(1, -16, 0, 28 + height + 4)
+            listFrame.Visible = true
             listFrame.Size = UDim2.new(1, -8, 0, height)
         else
-            container.Size = UDim2.new(1, 0, 0, 28)
+            container.Size = UDim2.new(1, -16, 0, 28)
+            listFrame.Visible = false
             listFrame.Size = UDim2.new(1, -8, 0, 0)
         end
     end)
@@ -457,16 +442,19 @@ function ApexUI:CreateDropdown(section, name, options, default, callback)
 end
 
 -- ============================================================
--- TEXTBOX
+-- TEXTBOX (posición absoluta)
 -- ============================================================
 function ApexUI:CreateTextbox(section, name, placeholder, callback)
+    local tab = section.Tab
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
+    tab.Y = tab.Y + 32
 
     local box = Create("TextBox", {
         Size = UDim2.new(1, -20, 1, -8),
@@ -491,16 +479,19 @@ function ApexUI:CreateTextbox(section, name, placeholder, callback)
 end
 
 -- ============================================================
--- COLORPICKER
+-- COLORPICKER (posición absoluta)
 -- ============================================================
 function ApexUI:CreateColorpicker(section, name, default, callback)
+    local tab = section.Tab
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
+    tab.Y = tab.Y + 32
 
     Create("TextLabel", {
         Size = UDim2.new(1, -60, 1, 0),
@@ -542,16 +533,19 @@ function ApexUI:CreateColorpicker(section, name, default, callback)
 end
 
 -- ============================================================
--- KEYBIND
+-- KEYBIND (posición absoluta)
 -- ============================================================
 function ApexUI:CreateKeybind(section, name, defaultKey, callback)
+    local tab = section.Tab
     local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 28),
+        Size = UDim2.new(1, -16, 0, 28),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundColor3 = Theme.Element,
         Parent = section.Frame
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = container })
     Create("UIStroke", { Color = Color3.new(1,1,1), Thickness = 1, Transparency = 0.6, Parent = container })
+    tab.Y = tab.Y + 32
 
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
@@ -597,11 +591,13 @@ function ApexUI:CreateKeybind(section, name, defaultKey, callback)
 end
 
 -- ============================================================
--- LABEL
+-- LABEL (posición absoluta)
 -- ============================================================
 function ApexUI:CreateLabel(section, text)
-    return Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 20),
+    local tab = section.Tab
+    local label = Create("TextLabel", {
+        Size = UDim2.new(1, -16, 0, 20),
+        Position = UDim2.new(0, 8, 0, tab.Y),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = Theme.SubText,
@@ -610,6 +606,8 @@ function ApexUI:CreateLabel(section, text)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = section.Frame
     })
+    tab.Y = tab.Y + 24
+    return label
 end
 
 -- ============================================================
