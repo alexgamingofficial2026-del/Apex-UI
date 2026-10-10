@@ -160,7 +160,6 @@ function ApexUI:CreateWindow(title)
         Parent = self.Main
     })
 
-    -- Animación de entrada
     self.Main.Size = UDim2.new(0, 0, 0, 0)
     self.Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Tween(self.Main, 0.35, {
@@ -168,7 +167,6 @@ function ApexUI:CreateWindow(title)
         Position = UDim2.new(0.5, -210, 0.5, -160)
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
-    -- Barra de título
     local titleBar = Create("Frame", {
         Name = "TitleBar",
         Size = UDim2.new(1, 0, 0, 34),
@@ -236,18 +234,13 @@ function ApexUI:CreateWindow(title)
     Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = closeBtn })
 
     closeBtn.MouseButton1Click:Connect(function()
-        Tween(self.Main, 0.25, {
-            Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0.5, 0, 0.5, 0)
-        }, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        task.wait(0.26)
         self.ScreenGui:Destroy()
     end)
 
     minBtn.MouseButton1Click:Connect(function()
-        local isMinimized = self.Main.Size.Y.Offset < 100
+        local isMin = self.Main.Size.Y.Offset < 100
         Tween(self.Main, 0.25, {
-            Size = isMinimized and UDim2.new(0, 420, 0, 320) or UDim2.new(0, 420, 0, 34)
+            Size = isMin and UDim2.new(0, 420, 0, 320) or UDim2.new(0, 420, 0, 34)
         }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     end)
 
@@ -281,7 +274,7 @@ function ApexUI:CreateWindow(title)
         Parent = self.Sidebar
     })
 
-    -- Content
+    -- Contenido
     self.Content = Create("Frame", {
         Name = "Content",
         Size = UDim2.new(1, -135, 1, -46),
@@ -316,9 +309,10 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
-    -- Frame contenedor del tab (con ScrollBar funcional)
+    -- ScrollingFrame por pestaña
     local frame = Create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -377,48 +371,27 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- SECCIONES
+-- SECCIONES (SIN WRAPPER - DIRECTO AL TAB)
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local section = { Name = name }
 
-    local wrapper = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        BackgroundTransparency = 1,
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Parent = tab.Frame
-    })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = wrapper
-    })
-
+    -- Label de la sección (directamente al tab.Frame)
     local label = Create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 20),
+        Size = UDim2.new(1, 0, 0, 22),
         BackgroundTransparency = 1,
         Text = "▸ " .. name,
         TextColor3 = CurrentTheme.Accent,
         Font = Enum.Font.GothamBold,
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = wrapper
+        LayoutOrder = 1,
+        Parent = tab.Frame
     })
 
-    local container = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        BackgroundTransparency = 1,
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Parent = wrapper
-    })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = container
-    })
-
+    -- Los elementos van directos al tab.Frame, no a un container separado
     section.Label = label
-    section.Frame = container
+    section.Frame = tab.Frame
 
     return section
 end
@@ -454,9 +427,6 @@ function ApexUI:CreateButton(section, name, callback)
     end)
 
     btn.MouseButton1Click:Connect(function()
-        Tween(btn, 0.08, { Size = UDim2.new(0.97, 0, 0, 28) })
-        task.wait(0.08)
-        Tween(btn, 0.1, { Size = UDim2.new(1, 0, 0, 28) })
         if callback then callback() end
     end)
 
