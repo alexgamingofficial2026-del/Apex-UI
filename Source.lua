@@ -25,14 +25,8 @@ local function Create(class, props)
     return i
 end
 
--- Detección de parent para Delta (usa PlayerGui si CoreGui falla)
+-- Delta fix: usar SIEMPRE PlayerGui
 local function GetGuiParent()
-    local ok, core = pcall(function()
-        return game:GetService("CoreGui")
-    end)
-    if ok and core then
-        return core
-    end
     return game.Players.LocalPlayer:WaitForChild("PlayerGui")
 end
 
