@@ -307,9 +307,10 @@ function ApexUI:CreateTab(name)
     })
     Create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = btn })
 
+    -- ScrollingFrame con padding
     local frame = Create("ScrollingFrame", {
-        Size = UDim2.new(1, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(1, -10, 1, -10),
+        Position = UDim2.new(0, 5, 0, 5),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
@@ -325,10 +326,10 @@ function ApexUI:CreateTab(name)
         Parent = frame
     })
     Create("UIPadding", {
-        PaddingTop = UDim.new(0, 8),
-        PaddingLeft = UDim.new(0, 8),
-        PaddingRight = UDim.new(0, 8),
-        PaddingBottom = UDim.new(0, 8),
+        PaddingTop = UDim.new(0, 5),
+        PaddingLeft = UDim.new(0, 5),
+        PaddingRight = UDim.new(0, 5),
+        PaddingBottom = UDim.new(0, 5),
         Parent = frame
     })
 
@@ -368,22 +369,10 @@ function ApexUI:CreateTab(name)
 end
 
 -- ============================================================
--- SECCIONES (FIX: Wrapper + Container con LayoutOrder)
+-- SECCIONES (SIMPLE: LABEL + CONTAINER)
 -- ============================================================
 function ApexUI:CreateSection(tab, name)
     local section = { Name = name }
-
-    local wrapper = Create("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        BackgroundTransparency = 1,
-        AutomaticSize = Enum.AutomaticSize.Y,
-        Parent = tab.Frame
-    })
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = wrapper
-    })
 
     local label = Create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 22),
@@ -393,16 +382,14 @@ function ApexUI:CreateSection(tab, name)
         Font = Enum.Font.GothamBold,
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Left,
-        LayoutOrder = 1,
-        Parent = wrapper
+        Parent = tab.Frame
     })
 
     local container = Create("Frame", {
         Size = UDim2.new(1, 0, 0, 0),
         BackgroundTransparency = 1,
         AutomaticSize = Enum.AutomaticSize.Y,
-        LayoutOrder = 2,
-        Parent = wrapper
+        Parent = tab.Frame
     })
     Create("UIListLayout", {
         Padding = UDim.new(0, 5),
@@ -411,7 +398,6 @@ function ApexUI:CreateSection(tab, name)
     })
 
     section.Label = label
-    section.Wrapper = wrapper
     section.Frame = container
 
     return section
