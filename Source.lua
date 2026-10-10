@@ -873,4 +873,188 @@ function ApexUI:CreateKeybind(section, name, defaultKey, callback)
     Create("TextLabel", {
         Size = UDim2.new(1, -80, 1, 0),
         Position = UDim2.new(0, 10, 0, 0),
-        BackgroundTrans
+        BackgroundTransparency = 1,
+        Text = name,
+        TextColor3 = CurrentTheme.Text,
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = container
+    })
+
+    local keyBtn = Create("TextButton", {
+        Size = UDim2.new(0, 54, 0, 18),
+        Position = UDim2.new(1, -64, 0.5, -9),
+        BackgroundColor3 = CurrentTheme.Background,
+        BackgroundTransparency = 0.2,
+        Text = defaultKey or "NONE",
+        TextColor3 = CurrentTheme.Text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 10,
+        AutoButtonColor = false,
+        Parent = container
+    })
+    Create("UICorner", { CornerRadius = UDim.new(0, 7), Parent = keyBtn })
+
+    local listening = false
+
+    keyBtn.MouseButton1Click:Connect(function()
+        listening = true
+        keyBtn.Text = "..."
+        Tween(keyBtn, 0.15, { BackgroundColor3 = CurrentTheme.Accent })
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if listening then
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                keyBtn.Text = input.KeyCode.Name
+                listening = false
+                Tween(keyBtn, 0.15, { BackgroundColor3 = CurrentTheme.Background })
+                if callback then callback(input.KeyCode) end
+            end
+        else
+            if input.UserInputType == Enum.UserInputType.Keyboard
+            and input.KeyCode.Name == keyBtn.Text then
+                if callback then callback(input.KeyCode) end
+            end
+        end
+    end)
+
+    return keyBtn
+end
+
+-- ============================================================
+-- LABEL
+-- ============================================================
+function ApexUI:CreateLabel(section, text)
+    local label = Create("TextLabel", {
+        Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = CurrentTheme.SubText,
+        Font = Enum.Font.Gotham,
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = section.Frame
+    })
+    return label
+end
+
+-- ============================================================
+-- NOTIFICACIÓN
+-- ============================================================
+local notifCount = 0
+
+function ApexUI:Notify(title, text, duration)
+    duration = duration or 3
+    notifCount = notifCount + 1
+    local myIndex = notifCount
+
+    local notif = Create("Frame", {
+        Size = UDim2.new(0, 250, 0, 56),
+        Position = UDim2.new(1, 10, 0, 20 + (myIndex - 1) * 66),
+        BackgroundColor3 = CurrentTheme.Header,
+        BackgroundTransparency = CurrentTheme.Transparency,
+        BorderSizePixel = 0,
+        Parent = self.ScreenGui
+    })
+    Create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = notif })
+    Create("UIStroke", {
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 1.5,
+        Transparency = 0.3,
+        Parent = notif
+    })
+
+    -- Línea accent
+    Create("Frame", {
+        Size = UDim2.new(0, 3, 0, 30),
+        Position = UDim2.new(0, 8, 0.5, -15),
+        BackgroundColor3 = CurrentTheme.Accent,
+        BorderSizePixel = 0,
+        Parent = notif
+    })
+
+    Create("TextLabel", {
+        Size = UDim2.new(1, -30, 0, 18),
+        Position = UDim2.new(0, 18, 0, 8),
+        BackgroundTransparency = 1,
+        Text = title,
+        TextColor3 = CurrentTheme.Accent,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = notif
+    })
+
+    Create("TextLabel", {
+        Size = UDim2.new(1, -30, 0, 18),
+        Position = UDim2.new(0, 18, 0, 28),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = CurrentTheme.Text,
+        Font = Enum.Font.Gotham,
+        TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        Parent = notif
+    })
+
+    -- Animación de entrada
+    notif.Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66)
+    Tween(notif, 0.3, {
+        Position = UDim2.new(1, -260, 0, 20 + (myIndex - 1) * 66)
+    }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+    -- Animación de salida
+    task.delay(duration, function()
+        Tween(notif, 0.25, {
+            Position = UDim2.new(1, 260, 0, 20 + (myIndex - 1) * 66)
+        }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        task.wait(0.26)
+        notif:Destroy()
+    end)
+end
+
+-- ============================================================
+-- TEMAS
+-- ============================================================
+function ApexUI:SetTheme(themeName)
+    if Themes[themeName] then
+        CurrentTheme = Themes[themeName]
+        return true
+    end
+    return false
+end
+
+function ApexUI:GetThemes()
+    local list = {}
+    for k, _ in pairs(Themes) do
+        table.insert(list, k)
+    end
+    return list
+end
+
+-- ============================================================
+-- CONFIGS
+-- ============================================================
+local Configs = {}
+
+function ApexUI:SaveConfig(name)
+    Configs[name] = Configs[name] or {}
+    return true
+end
+
+function ApexUI:LoadConfig(name)
+    return Configs[name] or {}
+end
+
+function ApexUI:DeleteConfig(name)
+    Configs[name] = nil
+end
+
+-- ============================================================
+-- RETORNAR
+-- ============================================================
+return ApexUI
